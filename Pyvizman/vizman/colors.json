@@ -1,0 +1,36 @@
+{
+    "neutrals": {
+        "BONE_WHITE": "#FFFCF2",
+        "ALL_WHITE": "#FFFFFF",
+        "GRAY": "#b8b8b8",
+        "OLIVE_GRAY":"#6A7870",
+        "HALF_BLACK": "#232324"
+    },
+    "colds": {
+        "INK_BLUE": "#0F14F7",
+        "NIGHT_BLUE": "#394D73",
+        "DEEP_BLUE": "#006685",
+        "LAKE_BLUE": "#3FA5C4",
+        "TEAL": "#44cfcf"
+    },
+    "warms": {
+        "SAND": "#E1C5A2",
+        "YELLOW": "#E6B213",
+        "ORANGE": "#F99465",
+        "LECKER_RED": "#E84653",
+        "DEEP_RED": "#BF003F"
+    },
+    "purples": {
+        "PINK": "#EFBBD3",
+        "PURPLE": "#A6587C",
+        "PURPLER": "#591154",
+        "PURPLEST": "#260126"
+    },
+    "greens": {
+        "GRASS_GREEN": "#5DC400",
+        "SLOW_GREEN": "#a1d4ca",
+        "JUST_GREEN": "#4BAE6A",
+        "LUXUARY_GREEN": "#275036",
+        "ULTRA_GREEN": "#52FF94"
+    }
+}

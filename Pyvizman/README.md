@@ -1,0 +1,1 @@
+I'm sick of running the same batch of spaghetti code every time I want to plot a nice scatterplot. I'm going to write some functions that does it for me (and you).
