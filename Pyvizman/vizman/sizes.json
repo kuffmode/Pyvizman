@@ -1,0 +1,7 @@
+{
+    "small": [5, 3],
+    "half_column":[9,5],
+    "wide":[18,9],
+    "half_page":[18,12],
+    "full_page":[18,16]
+}
