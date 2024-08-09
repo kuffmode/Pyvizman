@@ -1,13 +1,15 @@
 import json
 from typing import Tuple
+
 import matplotlib
+import matplotlib.patches as patches
 import matplotlib.pyplot as plt
-import seaborn as sns
-from matplotlib import font_manager
 import numpy as np
 import pandas as pd
+import seaborn as sns
 from cycler import cycler
-import matplotlib.patches as patches
+from matplotlib import font_manager
+
 
 def load_data_from_json(file_path: str) -> dict:
     """Just loads colors (and other data) from a json file.
@@ -118,6 +120,18 @@ def set_visual_style(json_color_path: str='vizman/colors.json',
 
 
 def give_colormaps(json_color_path: str='vizman/colors.json') -> dict:
+    """Loads the default colormaps that I use for the plots.
+    These maps might get updated over time so always check the dictionary keys to see what's up.
+    I tend to stick to the rule of "from something to something" so if there are three abbreviations
+    like xx_xx_xx usually it means divergent from the middle xx. 
+    If it's just two, like xx_xx it means going from the first xx to the second one.
+
+    Args:
+        json_color_path (str, optional): Path to colors.json. Defaults to 'vizman/colors.json'.
+
+    Returns:
+        dict: dictionary containing the colormaps, like "db_bw_lr" that is a divergent colormap from deep blue to lecker red.
+    """
     colors = load_data_from_json(json_color_path)
 
     colormaps = {
@@ -175,7 +189,20 @@ def plot_matrix(adjmat:np.ndarray|pd.DataFrame,
                 community_labels:np.ndarray[int]|list[int]=None,
                 community_cmap:str|dict=None,
                 axis:matplotlib.axes = None,
-                sns_kwargs:dict=None) -> None:
+                sns_kwargs:dict=None) -> matplotlib.axes:
+    """Plots a matrix (adjacency,e.g.) with or without community labels.
+
+    Args:
+        adjmat (np.ndarray | pd.DataFrame): The matrix to be plotted.
+        cbar (bool, optional): To plot a cbar next to the matrix or not. Defaults to False.
+        community_labels (np.ndarray[int] | list[int], optional): Which communities each node belong to. Defaults to None.
+        community_cmap (str | dict, optional): the cmap for the communities, should be discrete. Defaults to None.
+        axis (matplotlib.axes, optional): which axis to plot in. Defaults to None.
+        sns_kwargs (dict, optional): kwargs going to sns.heatmap function. Defaults to None.
+
+    Returns:
+        matplotlib.axes: An axis with the plot.
+    """
     sns_kwargs = sns_kwargs or {}
     if axis is None:
         axis = plt.figure().add_axes([0,0,1,1])
@@ -224,6 +251,18 @@ def plot_eigenspectrum(adjmat:np.ndarray|pd.DataFrame,
                        spectral_radius_color:str|dict='black',
                        unit_circle:bool=False,
                        sns_kwargs:dict=None) -> None:
+    """Plots the eigenspectrum of the given adjacency matrix.
+
+    Args:
+        adjmat (np.ndarray | pd.DataFrame): The adjacency matrix.
+        axis (matplotlib.axes, optional): Which axis to plot in. Defaults to None.
+        spectral_radius_color (str | dict, optional): Which color to plot the spectral radius in. Defaults to 'black'.
+        unit_circle (bool, optional): if a unit circle needs to be plotted. Defaults to False.
+        sns_kwargs (dict, optional): seaborn kwargs for sns.scatter function. Defaults to None.
+
+    Returns:
+        matplotlib.axes: axis with the plot.
+    """
     sns_kwargs = sns_kwargs or {}
     if axis is None:
         axis = plt.figure().add_axes([0,0,1,1])
