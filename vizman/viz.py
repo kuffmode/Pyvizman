@@ -218,6 +218,7 @@ def plot_matrix(adjmat:np.ndarray|pd.DataFrame,
     sns.despine(top=False, right=False, left=False, bottom=False)
     return axis
 
+
 def plot_eigenspectrum(adjmat:np.ndarray|pd.DataFrame,
                        axis:matplotlib.axes=None,
                        spectral_radius_color:str|dict='black',
