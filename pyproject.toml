@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "vizman"
 version = "0.1.0"
-description = "Nicer printable plots"
+description = "vizman is here to give you nicer printable plots"
 authors = ["Kayson Fakhar <kayson.fakhar@gmail.com>"]
 readme = "README.md"
 
