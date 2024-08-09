@@ -1,0 +1,13 @@
+*.DS_Store
+testbed.ipynb
+vizman/__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.so
+*.egg-info/
+dist/
+build/
+venv/
+.idea/
+.vscode/

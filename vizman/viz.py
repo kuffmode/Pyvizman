@@ -7,6 +7,7 @@ from matplotlib import font_manager
 import numpy as np
 import pandas as pd
 from cycler import cycler
+import matplotlib.patches as patches
 
 def load_data_from_json(file_path: str) -> dict:
     """Just loads colors (and other data) from a json file.
@@ -32,7 +33,7 @@ def add_font(font_path: str) -> None:
         font_manager.fontManager.addfont(font)
 
 
-def set_visual_style(json_color_path: str='Pyvizman/vizman/colors.json',
+def set_visual_style(json_color_path: str='vizman/colors.json',
                      font_family:str="Atkinson Hyperlegible",
                      change_colors:bool=True) -> None:
     """Sets the visual style for the plots. 
@@ -47,7 +48,7 @@ def set_visual_style(json_color_path: str='Pyvizman/vizman/colors.json',
             - Atkinson Hyperlegible
             - IBM Plex Mono
             - Space Mono
-            To install them you can run `viz.add_font("Pyvizman/vizman/fonts")`
+            To install them you can run `viz.add_font("vizman/fonts")`
             I chose these because they are open source and they are extremely readable.
             By default it tries to load Atkinson Hyperlegible.
             If you want to use another font you can add it to the font folder and call `add_font`.
@@ -68,7 +69,7 @@ def set_visual_style(json_color_path: str='Pyvizman/vizman/colors.json',
             "axes.labelsize": 10,
             "axes.titlesize": 10,
             "axes.labelpad": 2,
-            "axes.linewidth": 0.5,
+            "axes.linewidth": 1,
             "axes.titlepad": 4,
             "lines.linewidth": 1,
             "legend.fontsize": 8,
@@ -77,16 +78,16 @@ def set_visual_style(json_color_path: str='Pyvizman/vizman/colors.json',
             "ytick.labelsize": 8,
             "xtick.major.size": 2,
             "xtick.major.pad": 1,
-            "xtick.major.width": 0.5,
+            "xtick.major.width": 1,
             "ytick.major.size": 2,
             "ytick.major.pad": 1,
-            "ytick.major.width": 0.5,
+            "ytick.major.width": 1,
             "xtick.minor.size": 2,
             "xtick.minor.pad": 1,
-            "xtick.minor.width": 0.5,
+            "xtick.minor.width": 1,
             "ytick.minor.size": 2,
             "ytick.minor.pad": 1,
-            "ytick.minor.width": 0.5,
+            "ytick.minor.width": 1,
             "text.color": colors['neutrals']['HALF_BLACK'],
             "patch.edgecolor": colors['neutrals']['HALF_BLACK'],
             "patch.force_edgecolor": False,
@@ -116,26 +117,31 @@ def set_visual_style(json_color_path: str='Pyvizman/vizman/colors.json',
 
 
 
-def give_colormaps(json_color_path: str='Pyvizman/vizman/colors.json') -> dict:
+def give_colormaps(json_color_path: str='vizman/colors.json') -> dict:
     colors = load_data_from_json(json_color_path)
 
     colormaps = {
-        "divergents":{
-            "db_bw_lr":sns.blend_palette([colors["colds"]["DEEP_BLUE"],
-                                           colors["neutrals"]["BONE_WHITE"],
-                                           colors["warms"]["LECKER_RED"]],
-                                          as_cmap=True),
-            "nb_bw_dr":sns.blend_palette([colors["colds"]["NIGHT_BLUE"],
-                                           colors["neutrals"]["BONE_WHITE"],
-                                           colors["warms"]["DEEP_RED"]],
-                                          as_cmap=True),
-            "sg_bw_pi":sns.blend_palette([colors["greens"]["SLOW_GREEN"],
-                                           colors["neutrals"]["BONE_WHITE"],
-                                           colors["purples"]["PINK"]],
-                                          as_cmap=True)},
-        "monos":{"bw_lr":sns.blend_palette([colors["neutrals"]["BONE_WHITE"],
-                                           colors["warms"]["LECKER_RED"]],
-                                          as_cmap=True),}
+        "db_bw_lr":sns.blend_palette([colors["colds"]["DEEP_BLUE"],
+                                      colors["neutrals"]["BONE_WHITE"],
+                                      colors["warms"]["LECKER_RED"]],
+                                     as_cmap=True),
+        "nb_bw_dr":sns.blend_palette([colors["colds"]["NIGHT_BLUE"],
+                                      colors["neutrals"]["BONE_WHITE"],
+                                      colors["warms"]["DEEP_RED"]],
+                                     as_cmap=True),
+        "sg_bw_pi":sns.blend_palette([colors["greens"]["SLOW_GREEN"],
+                                      colors["neutrals"]["BONE_WHITE"],
+                                      colors["purples"]["PINK"]],
+                                     as_cmap=True),
+        "bw_lr":sns.blend_palette([colors["neutrals"]["BONE_WHITE"],
+                                   colors["warms"]["LECKER_RED"]],
+                                  as_cmap=True),
+        "bw_db":sns.blend_palette([colors["neutrals"]["BONE_WHITE"],
+                                   colors["colds"]["DEEP_BLUE"]],
+                                  as_cmap=True),
+        "bw_hb":sns.blend_palette([colors["neutrals"]["BONE_WHITE"],
+                                   colors["neutrals"]["HALF_BLACK"]],
+                                  as_cmap=True),
         }
     return colormaps
 
@@ -164,7 +170,10 @@ def cm_to_inch(figure_size_in_cm: Tuple[float, float]) -> Tuple[float, float]:
     return tuple(map(lambda x: x / 2.54, figure_size_in_cm))
 
 
-def plot_adjmat(adjmat:np.ndarray|pd.DataFrame,
+def plot_matrix(adjmat:np.ndarray|pd.DataFrame,
+                cbar:bool=False,
+                community_labels:np.ndarray[int]|list[int]=None,
+                community_cmap:str|dict=None,
                 axis:matplotlib.axes = None,
                 sns_kwargs:dict=None) -> None:
     sns_kwargs = sns_kwargs or {}
@@ -178,11 +187,33 @@ def plot_adjmat(adjmat:np.ndarray|pd.DataFrame,
     
     pos = axis.get_position()
     height = pos.height
+    width = pos.width
     left = pos.x0 + pos.width + 0.03
     bottom = pos.y0
     
-    # Create a color bar manually, matching the height of the heatmap
-    cax = plt.gcf().add_axes([left, bottom, 0.03, height])
-    plt.colorbar(axis.collections[0], cax=cax)
+    if cbar:
+        cax = plt.gcf().add_axes([left, bottom, 0.03, height])
+        plt.colorbar(axis.collections[0], cax=cax)
+    
+    if community_labels:
+        comm_ax = plt.gcf().add_axes([pos.x0, pos.y0 + height + 0.02, width, 0.05])
+        
+        community_labels = np.array(community_labels).reshape(1, -1)
+        if community_cmap:
+            sns.heatmap(community_labels, ax=comm_ax, cmap=community_cmap,
+                        cbar=False, xticklabels=False, yticklabels=False, square=False)
+        unique_labels = np.unique(community_labels)
+        for label in unique_labels:
+            indices = np.where(community_labels[0] == label)[0]
+            start = indices[0]
+            end = indices[-1] + 1
+            rect = patches.Rectangle((start, 0), end - start, 1, edgecolor='black', facecolor='none')
+            comm_ax.add_patch(rect)
+        for label in unique_labels:
+            indices = np.where(community_labels[0] == label)[0]
+            start = indices[0]
+            end = indices[-1] + 1
+            rect = patches.Rectangle((start, start), end - start, end - start, edgecolor='black', facecolor='none')
+            axis.add_patch(rect)
     sns.despine(top=False, right=False, left=False, bottom=False)
     return axis
