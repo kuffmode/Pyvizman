@@ -217,3 +217,31 @@ def plot_matrix(adjmat:np.ndarray|pd.DataFrame,
             axis.add_patch(rect)
     sns.despine(top=False, right=False, left=False, bottom=False)
     return axis
+
+def plot_eigenspectrum(adjmat:np.ndarray|pd.DataFrame,
+                       axis:matplotlib.axes=None,
+                       spectral_radius_color:str|dict='black',
+                       unit_circle:bool=False,
+                       sns_kwargs:dict=None) -> None:
+    sns_kwargs = sns_kwargs or {}
+    if axis is None:
+        axis = plt.figure().add_axes([0,0,1,1])
+    
+    if isinstance(adjmat, pd.DataFrame):
+        adjmat = adjmat.to_numpy()
+    
+    eigenvalues = np.linalg.eigvals(adjmat)
+    spectral_radius_index = np.argmax(np.abs(eigenvalues))
+    spectral_radius_value = eigenvalues[spectral_radius_index]
+    
+    sns.scatterplot(x=eigenvalues.real, y=eigenvalues.imag, ax=axis, **sns_kwargs)
+    axis.scatter(spectral_radius_value.real, spectral_radius_value.imag, color=spectral_radius_color, marker = "X")
+    if unit_circle:
+        circle = patches.Circle((0,0),radius=1, edgecolor=spectral_radius_color, facecolor='none')
+        axis.add_patch(circle)
+    axis.set_aspect('equal', adjustable='box')
+
+    plt.axvline(0, c="black", lw=1)
+    plt.axhline(0, c="black", lw=1)
+    sns.despine(top=False, right=False, left=False, bottom=False)
+    return axis
