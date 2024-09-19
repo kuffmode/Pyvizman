@@ -1,6 +1,7 @@
 import json
 from typing import Tuple
 
+import importlib.resources
 import matplotlib
 import matplotlib.patches as patches
 import matplotlib.pyplot as plt
@@ -20,7 +21,7 @@ def load_data_from_json(file_path: str) -> dict:
     Returns:
         dict: stuff in the json file as a dictionary.
     """
-    with open(file_path, "r", encoding="utf-8") as file:
+    with open(importlib.resources.files("vizman") / file_path, "r", encoding="utf-8") as file:
         data = json.load(file)
     return data
 
@@ -35,7 +36,7 @@ def add_font(font_path: str) -> None:
         font_manager.fontManager.addfont(font)
 
 
-def set_visual_style(json_color_path: str='vizman/colors.json',
+def set_visual_style(json_color_path: str='colors.json',
                      font_family:str="Atkinson Hyperlegible",
                      change_colors:bool=True) -> None:
     """Sets the visual style for the plots. 
