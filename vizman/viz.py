@@ -120,7 +120,7 @@ def set_visual_style(json_color_path: str='colors.json',
 
 
 
-def give_colormaps(json_color_path: str='vizman/colors.json') -> dict:
+def give_colormaps(json_color_path: str='colors.json') -> dict:
     """Loads the default colormaps that I use for the plots.
     These maps might get updated over time so always check the dictionary keys to see what's up.
     I tend to stick to the rule of "from something to something" so if there are three abbreviations
